@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>game</title>
+        <style>
+            div {
+                width: 500px;
+            }
+            #box1 {
+                background-color:lightblue;
+                border-radius: 10px;
+                color: white;
+                text-align: center;
+                margin: 20px;
+                padding: 10px;
+                font-size: 20px;
+            }
+            #box2 {
+                text-align: center;
+                margin: 20px;
+                background-color: lightgray;
+            }
+            #box3 {
+                margin-left: 30px;
+            }
+            #box4 {
+                text-align: center;
+            }
+            #msg {
+                text-align: center;
+                border: solid 1px black;
+                height: 30px;
+                margin: 20px;
+            }
+            .card {
+                width: 100px;
+                margin: 2px;
+            }
+            input[type=button] {
+                width: 100px;
+                height: 20px;
+                margin: 10px;
+            }
+            .heart {
+                width: 40px;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+            var myArray = [1,1,2,2,3,3,4,4,5,5,6,6];
+            var order = false;
+            var heart = 3;
+            var correct = 0;
+            var sel1 = -1, sel2 = -1;
+            var flag = true;
+
+            function shuffle(a) { //배열 섞기
+                var i, j, temp;
+                for(i=a.length; i; i--) {
+                    j = Math.floor(Math.random()*i);
+                    temp = a[i-1];
+                    a[i-1] = a[j];
+                    a[j] = temp;
+                }
+                console.log(a);
+            }
+
+            function showOne(a, there) { // 카드 한장 보이기
+                var i = $(there).attr('id');
+                $(there).attr('src', './img/'+a[i]+'.png');
+            }
+
+            function showAll(a) { // 모든 카드 보이기
+                var i=0;
+                $('.card').each(function() {
+                    $(this).attr('src', './img/'+a[i]+'.png')
+                    i++;
+                });
+            }
+
+            function hideAll() { // 모든 카드 가리기
+                $('.card').attr('src', './img/back.png');
+            }
+
+            function after_select(a, i, j) { 
+                if(a[i] != a[j]) {
+                    $('#'+i).attr('src', './img/back.png');
+                    $('#'+j).attr('src', './img/back.png');
+                    $('#i'+heart).attr('src','./img/empty_heart.png');
+                    heart--;
+                }
+                else {
+                    correct++;    
+                }
+                
+                if(correct==6) $('#msg').text('성공!');
+                if(heart==0) {
+                    $('#msg').text('실패');
+                }
+            }
+            
+            function clearAll() {
+                myArray = [1,1,2,2,3,3,4,4,5,5,6,6];
+                order = false;
+                heart = 3;
+                correct = 0;
+                sel1 = -1, sel2 = -1;
+                flag = true;
+
+                $('#msg').text('');
+                $('.heart').attr('src', './img/heart.png');
+                hideAll();
+            }
+
+            $(document).ready(function() {
+                
+                $('#bt1').click(function() {
+                    clearAll();
+                    shuffle(myArray);
+                    showAll(myArray);
+                    flag = false;
+                    setTimeout('hideAll()', 2000);
+                });
+                
+                $('#bt2').click(function() {
+                    clearAll();
+                });
+
+                $('.card').click(function() {
+                    if(flag) {
+                        alert('start 버튼을 눌러주세요.');
+                        return;
+                    }
+                    if($(this).attr('src') != './img/back.png') return;
+                    if(heart==0) return;
+                    
+                    if(!order) {
+                        showOne(myArray, this);
+                        sel1 = $(this).attr('id');
+                        console.log('sel1 : '+ sel1);
+                        order = !order;
+                    }
+                    else {
+                        showOne(myArray, this);
+                        sel2 = $(this).attr('id');
+                        console.log('sel2 : '+ sel2);
+                        order = !order;
+                        setTimeout('after_select(myArray, sel1, sel2)',200);
+                    }
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div id='box1'>카드 짝 맞추기</div>
+        <div id='box2'>
+            <img class='card' id='0' src='./img/back.png'>
+            <img class='card' id='1' src='./img/back.png'>
+            <img class='card' id='2' src='./img/back.png'>
+            <img class='card' id='3' src='./img/back.png'>
+            <img class='card' id='4' src='./img/back.png'>
+            <img class='card' id='5' src='./img/back.png'>
+            <img class='card' id='6' src='./img/back.png'>
+            <img class='card' id='7' src='./img/back.png'>
+            <img class='card' id='8' src='./img/back.png'>
+            <img class='card' id='9' src='./img/back.png'>
+            <img class='card' id='10' src='./img/back.png'>
+            <img class='card' id='11' src='./img/back.png'>
+        </div>
+        <div id='box3'>
+            <img class='heart' id='i1' src='./img/heart.png'>
+            <img class='heart' id='i2' src='./img/heart.png'>
+            <img class='heart' id='i3' src='./img/heart.png'>
+        </div>
+        <div id='msg'></div>
+        <div id='box4'>
+            <input type='button' id='bt1' value='start'>
+            <input type='button' id='bt2' value='reset'>
+        </div>   
+    </body>
+</html>
